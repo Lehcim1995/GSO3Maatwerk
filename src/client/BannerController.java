@@ -9,28 +9,28 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class BannerController {
-
-    private AEXBanner banner;
-    private IEffectenBeurs effectenbeurs;
-    private Timer pollingTimer;
+public class BannerController
+{
 
     private final Random r = new Random();
+    private AEXBanner banner;
+    private IEffectenBeurs effectenBeurs;
+    private Timer pollingTimer;
 
-    public BannerController(final AEXBanner banner) {
-
+    public BannerController(final AEXBanner banner)
+    {
         this.banner = banner;
-        this.effectenbeurs = new MockEffectenbeurs();
+        this.effectenBeurs = new MockEffectenbeurs();
 
         // Start polling timer: update banner every two seconds
         pollingTimer = new Timer();
 
-        pollingTimer.schedule(new TimerTask()
+        pollingTimer.scheduleAtFixedRate(new TimerTask()
         {
             @Override
             public void run()
             {
-                banner.setKoersen(fromKoersToString(effectenbeurs.getKoersen()));
+                banner.setKoersen(fromKoersToString(effectenBeurs.getKoersen()));
             }
         }, 1000, 2000);
     }
@@ -39,7 +39,7 @@ public class BannerController {
     {
         StringBuilder print = new StringBuilder();
 
-        for (IFonds f: fonds)
+        for (IFonds f : fonds)
         {
             print.append(f.getNaam()).append(" ").append(f.getKoers()).append(" | ");
         }
@@ -48,9 +48,10 @@ public class BannerController {
     }
 
     // Stop banner controller
-    public void stop() {
+    public void stop()
+    {
         pollingTimer.cancel();
-        // Stop simulation timer of effectenbeurs
+        // Stop simulation timer of effectenBeurs
         // TODO
     }
 }
