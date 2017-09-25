@@ -3,11 +3,19 @@ package client;
 import Interfaces.IEffectenBeurs;
 import Interfaces.IFonds;
 import MockFiles.MockEffectenbeurs;
+import Server.Server;
 
+import java.rmi.NotBoundException;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class BannerController
 {
@@ -17,10 +25,40 @@ public class BannerController
     private IEffectenBeurs effectenBeurs;
     private Timer pollingTimer;
 
+    private static final String bindingName = "StudentAdmin";
+
+    // References to registry and student administration
+    private Registry registry = null;
+
     public BannerController(final AEXBanner banner)
     {
         this.banner = banner;
-        this.effectenBeurs = new MockEffectenbeurs();
+        String ipAddress = "127.0.0.1";
+        int portNumber = 1099;
+
+        try {
+            registry = LocateRegistry.getRegistry(ipAddress, portNumber);
+        } catch (RemoteException ex) {
+            Logger.getAnonymousLogger().log(Level.INFO, "Could not find registry on ip" + ipAddress + " and port " + portNumber);
+            registry = null;
+        }
+
+
+        try
+        {
+            if (registry != null)
+            {
+                this.effectenBeurs = (IEffectenBeurs) registry.lookup(bindingName);
+            }
+            else
+            {
+                throw new RemoteException();
+            }
+        }
+        catch (RemoteException | NotBoundException e)
+        {
+            Logger.getAnonymousLogger().log(Level.INFO, "Could not find " + bindingName);
+        }
 
         // Start polling timer: update banner every two seconds
         pollingTimer = new Timer();
@@ -30,7 +68,16 @@ public class BannerController
             @Override
             public void run()
             {
-                banner.setKoersen(fromKoersToString(effectenBeurs.getKoersen()));
+                try
+                {
+                    banner.setKoersen(fromKoersToString(effectenBeurs.getKoersen()));
+                }
+                catch (RemoteException e)
+                {
+                    banner.setKoersen(" Connection lost ");
+                    Logger.getAnonymousLogger().log(Level.INFO, "Could not recieve koersen from remote");
+                    stop();
+                }
             }
         }, 1000, 2000);
     }
@@ -38,6 +85,7 @@ public class BannerController
     private String fromKoersToString(List<IFonds> fonds)
     {
         StringBuilder print = new StringBuilder();
+        // TODO Build something to prevent the jumping of charaters
 
         for (IFonds f : fonds)
         {

@@ -1,6 +1,8 @@
 package Interfaces;
 
-public interface IFonds
+import java.io.Serializable;
+
+public interface IFonds extends Serializable
 {
     String getNaam();
 

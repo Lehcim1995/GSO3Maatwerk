@@ -53,6 +53,7 @@ public class AEXBanner extends Application {
                 long lag = now - prevUpdate;
                 if (lag >= NANO_TICKS) {
                     // calculate new location of text
+                    // TODO add wrapping of the text object
 
                     final float frameRate = 0.02F; // 1 / 50
                     textPosition -= textSpeed * frameRate;

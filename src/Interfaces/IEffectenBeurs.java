@@ -1,8 +1,10 @@
 package Interfaces;
 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.List;
 
-public interface IEffectenBeurs
+public interface IEffectenBeurs extends Remote
 {
-    List<IFonds> getKoersen();
+    List<IFonds> getKoersen() throws RemoteException;
 }
