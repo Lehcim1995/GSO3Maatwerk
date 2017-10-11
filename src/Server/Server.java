@@ -6,7 +6,6 @@ import MockFiles.MockEffectenbeurs;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,15 +64,5 @@ public class Server
     public static void main(String[] arg)
     {
         Server server = new Server();
-
-        //TODO find a better way
-        String stop = "";
-        Scanner input = new Scanner(System.in);
-
-        while (!stop.equals("Stop"))
-        {
-            stop = input.nextLine();
-        }
-
     }
 }
