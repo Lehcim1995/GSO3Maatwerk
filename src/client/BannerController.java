@@ -1,5 +1,6 @@
 package client;
 
+import Conts.Constants;
 import Interfaces.IEffectenBeurs;
 import Interfaces.IFonds;
 import MockFiles.MockEffectenbeurs;
@@ -25,8 +26,6 @@ public class BannerController
     private IEffectenBeurs effectenBeurs;
     private Timer pollingTimer;
 
-    private static final String bindingName = "StudentAdmin";
-
     // References to registry and student administration
     private Registry registry = null;
 
@@ -48,7 +47,7 @@ public class BannerController
         {
             if (registry != null)
             {
-                this.effectenBeurs = (IEffectenBeurs) registry.lookup(bindingName);
+                this.effectenBeurs = (IEffectenBeurs) registry.lookup(Constants.bindingName);
             }
             else
             {
@@ -57,7 +56,7 @@ public class BannerController
         }
         catch (RemoteException | NotBoundException e)
         {
-            Logger.getAnonymousLogger().log(Level.INFO, "Could not find " + bindingName);
+            Logger.getAnonymousLogger().log(Level.INFO, "Could not find " + Constants.bindingName);
         }
 
         // Start polling timer: update banner every two seconds

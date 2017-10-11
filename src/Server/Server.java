@@ -1,5 +1,6 @@
 package Server;
 
+import Conts.Constants;
 import Interfaces.IEffectenBeurs;
 import MockFiles.MockEffectenbeurs;
 
@@ -11,12 +12,6 @@ import java.util.logging.Logger;
 
 public class Server
 {
-
-    private static final int portNumber = 1099;
-
-    // Set binding name for student administration
-    private static final String bindingName = "StudentAdmin";
-
     // References to registry and student administration
     private Registry registry = null;
     private IEffectenBeurs effectenBeurs = null;
@@ -34,7 +29,7 @@ public class Server
 
         try
         {
-            registry = LocateRegistry.createRegistry(portNumber);
+            registry = LocateRegistry.createRegistry(Constants.portNumber);
 
         }
         catch (RemoteException ex)
@@ -48,7 +43,7 @@ public class Server
         {
             if (registry != null)
             {
-                registry.rebind(bindingName, effectenBeurs);
+                registry.rebind(Constants.bindingName, effectenBeurs);
             }
             else
             {
@@ -57,7 +52,7 @@ public class Server
         }
         catch (RemoteException ex)
         {
-            Logger.getAnonymousLogger().log(Level.INFO, "Could not (re)bind " + bindingName);
+            Logger.getAnonymousLogger().log(Level.INFO, "Could not (re)bind " + Constants.bindingName);
         }
     }
 
