@@ -1,8 +1,9 @@
 package Server;
 
-import Conts.Constants;
 import Interfaces.IEffectenBeurs;
 import MockFiles.MockEffectenbeurs;
+import fontyspublisher.IRemotePublisherForDomain;
+import fontyspublisher.RemotePublisher;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -10,11 +11,16 @@ import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static Conts.Constants.BINDING_NAME;
+import static Conts.Constants.PORT_NUMBER;
+
 public class Server
 {
     // References to registry and student administration
     private Registry registry = null;
     private IEffectenBeurs effectenBeurs = null;
+
+    private IRemotePublisherForDomain remotePublisherForDomain;
 
     public Server()
     {
@@ -24,12 +30,22 @@ public class Server
         }
         catch (RemoteException e)
         {
-            Logger.getAnonymousLogger().log(Level.INFO, "Remote exection on effectenbeurs");
+            Logger.getAnonymousLogger().log(Level.INFO, "Remote exception on effectenbeurs");
         }
 
         try
         {
-            registry = LocateRegistry.createRegistry(Constants.portNumber);
+            remotePublisherForDomain = new RemotePublisher();
+            remotePublisherForDomain.registerProperty("asdasd");
+        }
+        catch (RemoteException e)
+        {
+            Logger.getAnonymousLogger().log(Level.INFO, "Remote exception on remotePublisherForDomain");
+        }
+
+        try
+        {
+            registry = LocateRegistry.createRegistry(PORT_NUMBER);
 
         }
         catch (RemoteException ex)
@@ -43,7 +59,7 @@ public class Server
         {
             if (registry != null)
             {
-                registry.rebind(Constants.bindingName, effectenBeurs);
+                registry.rebind(BINDING_NAME, effectenBeurs);
             }
             else
             {
@@ -52,7 +68,7 @@ public class Server
         }
         catch (RemoteException ex)
         {
-            Logger.getAnonymousLogger().log(Level.INFO, "Could not (re)bind " + Constants.bindingName);
+            Logger.getAnonymousLogger().log(Level.INFO, "Could not (re)bind " + BINDING_NAME);
         }
     }
 

@@ -3,11 +3,11 @@ package client;
 import Conts.Constants;
 import Interfaces.IEffectenBeurs;
 import Interfaces.IFonds;
-import MockFiles.MockEffectenbeurs;
-import Server.Server;
+import fontyspublisher.IRemotePropertyListener;
+import fontyspublisher.IRemotePublisherForListener;
 
+import java.beans.PropertyChangeEvent;
 import java.rmi.NotBoundException;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -18,7 +18,10 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class BannerController
+import static Conts.Constants.BINDING_NAME;
+import static Conts.Constants.LOCAL_HOST;
+
+public class BannerController implements IRemotePropertyListener
 {
 
     private final Random r = new Random();
@@ -28,11 +31,12 @@ public class BannerController
 
     // References to registry and student administration
     private Registry registry = null;
+    private IRemotePublisherForListener remotePropertyListener;
 
     public BannerController(final AEXBanner banner)
     {
         this.banner = banner;
-        String ipAddress = "127.0.0.1";
+        String ipAddress = LOCAL_HOST;
         int portNumber = 1099;
 
         try {
@@ -47,7 +51,8 @@ public class BannerController
         {
             if (registry != null)
             {
-                this.effectenBeurs = (IEffectenBeurs) registry.lookup(Constants.bindingName);
+                this.effectenBeurs = (IEffectenBeurs) registry.lookup(BINDING_NAME);
+                this.remotePropertyListener = (IRemotePublisherForListener) registry.lookup(BINDING_NAME);
             }
             else
             {
@@ -56,7 +61,17 @@ public class BannerController
         }
         catch (RemoteException | NotBoundException e)
         {
-            Logger.getAnonymousLogger().log(Level.INFO, "Could not find " + Constants.bindingName);
+            Logger.getAnonymousLogger().log(Level.INFO, "Could not find " + BINDING_NAME);
+        }
+
+        try
+        {
+            // TODO add property name
+            remotePropertyListener.subscribeRemoteListener(this, "asdasd");
+        }
+        catch (RemoteException e)
+        {
+            e.printStackTrace();
         }
 
         // Start polling timer: update banner every two seconds
@@ -100,5 +115,11 @@ public class BannerController
         pollingTimer.cancel();
         // Stop simulation timer of effectenBeurs
         // TODO
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent propertyChangeEvent) throws RemoteException
+    {
+
     }
 }
