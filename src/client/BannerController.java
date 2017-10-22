@@ -11,10 +11,10 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Random;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,7 +22,7 @@ import static Conts.Constants.BINDING_NAME;
 import static Conts.Constants.LOCAL_HOST;
 import static Conts.Constants.PROPERTY_NAME;
 
-public class BannerController implements IRemotePropertyListener
+public class BannerController extends UnicastRemoteObject implements IRemotePropertyListener
 {
 
     private final Random r = new Random();
@@ -34,7 +34,7 @@ public class BannerController implements IRemotePropertyListener
     private Registry registry = null;
     private IRemotePublisherForListener remotePropertyListener;
 
-    public BannerController(final AEXBanner banner)
+    public BannerController(final AEXBanner banner) throws RemoteException
     {
         this.banner = banner;
         String ipAddress = LOCAL_HOST;
@@ -47,12 +47,10 @@ public class BannerController implements IRemotePropertyListener
             registry = null;
         }
 
-
         try
         {
             if (registry != null)
             {
-                this.effectenBeurs = (IEffectenBeurs) registry.lookup(BINDING_NAME);
                 this.remotePropertyListener = (IRemotePublisherForListener) registry.lookup(BINDING_NAME);
             }
             else
@@ -73,27 +71,6 @@ public class BannerController implements IRemotePropertyListener
         {
             Logger.getAnonymousLogger().log(Level.INFO, "Could not subscribe to remote listener " + PROPERTY_NAME);
         }
-
-        // Start polling timer: update banner every two seconds
-        pollingTimer = new Timer();
-
-        pollingTimer.scheduleAtFixedRate(new TimerTask()
-        {
-            @Override
-            public void run()
-            {
-                try
-                {
-                    banner.setKoersen(fromKoersToString(effectenBeurs.getKoersen()));
-                }
-                catch (RemoteException e)
-                {
-                    banner.setKoersen(" Connection lost ");
-                    Logger.getAnonymousLogger().log(Level.INFO, "Could not recieve koersen from remote");
-                    stop();
-                }
-            }
-        }, 1000, 2000);
     }
 
     private String fromKoersToString(List<IFonds> fonds)
@@ -107,13 +84,6 @@ public class BannerController implements IRemotePropertyListener
         }
 
         return print.toString();
-    }
-
-    // Stop banner controller
-    public void stop()
-    {
-        pollingTimer.cancel();
-        // Stop simulation timer of effectenBeurs
     }
 
     @Override

@@ -27,11 +27,12 @@ public class Server
     {
         try
         {
-            effectenBeurs = new MockEffectenbeurs();
+            effectenBeurs = new MockEffectenbeurs(this);
+            ((MockEffectenbeurs)effectenBeurs).makeTimer();
         }
         catch (RemoteException e)
         {
-            Logger.getAnonymousLogger().log(Level.INFO, "Remote exception on effectenbeurs");
+            Logger.getAnonymousLogger().log(Level.INFO, "Remote exception on MockEffectenbeurs");
         }
 
         try
@@ -60,7 +61,7 @@ public class Server
         {
             if (registry != null)
             {
-                registry.rebind(BINDING_NAME, effectenBeurs);
+                registry.rebind(BINDING_NAME, remotePublisherForDomain);
             }
             else
             {

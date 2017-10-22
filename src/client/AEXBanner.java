@@ -9,6 +9,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.rmi.RemoteException;
+
 public class AEXBanner extends Application {
 
     public static final int WIDTH = 1000;
@@ -25,7 +27,8 @@ public class AEXBanner extends Application {
     private long textSpeed = 300; // px per second
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws RemoteException
+    {
 
         controller = new BannerController(this);
 
@@ -85,6 +88,5 @@ public class AEXBanner extends Application {
     @Override
     public void stop() {
         animationTimer.stop();
-        controller.stop();
     }
 }

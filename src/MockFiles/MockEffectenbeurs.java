@@ -6,6 +6,9 @@ import Interfaces.IFonds;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import Server.Server;
 
 import static Conts.Constants.PROPERTY_NAME;
@@ -30,6 +33,19 @@ public class MockEffectenbeurs extends UnicastRemoteObject implements IEffectenB
         this.koersen.add(new MockFonds("Jetbrains"));
     }
 
+    public MockEffectenbeurs(Server server) throws RemoteException
+    {
+        this.koersen = new ArrayList<>();
+
+        this.koersen.add(new MockFonds("Heineken"));
+        this.koersen.add(new MockFonds("Fontys"));
+        this.koersen.add(new MockFonds("Jupiler"));
+        this.koersen.add(new MockFonds("EA Sports"));
+        this.koersen.add(new MockFonds("Jetbrains"));
+
+        this.server = server;
+    }
+
     @Override
     public List<IFonds> getKoersen() throws RemoteException
     {
@@ -37,9 +53,12 @@ public class MockEffectenbeurs extends UnicastRemoteObject implements IEffectenB
         return koersen;
     }
 
-    private void MakeTimer()
+    public void makeTimer()
     {
+        Logger.getAnonymousLogger().log(Level.INFO, "Created Time");
+
         timer = new Timer();
+
         timer.scheduleAtFixedRate(new TimerTask()
         {
             @Override
@@ -47,11 +66,11 @@ public class MockEffectenbeurs extends UnicastRemoteObject implements IEffectenB
             {
                 try
                 {
-                    server.getRemotePublisherForDomain().inform(PROPERTY_NAME, getKoersen(), null);
+                    server.getRemotePublisherForDomain().inform(PROPERTY_NAME, getKoersen(), getKoersen());
                 }
                 catch (RemoteException e)
                 {
-                    e.printStackTrace();
+                    Logger.getAnonymousLogger().log(Level.INFO, "Could not inform " + PROPERTY_NAME);
                 }
             }
         },1000,1000);
@@ -65,5 +84,4 @@ public class MockEffectenbeurs extends UnicastRemoteObject implements IEffectenB
             ((MockFonds)fonds).setKoers(koers);
         }
     }
-
 }
