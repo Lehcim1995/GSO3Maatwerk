@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 
 import static Conts.Constants.BINDING_NAME;
 import static Conts.Constants.LOCAL_HOST;
+import static Conts.Constants.PROPERTY_NAME;
 
 public class BannerController implements IRemotePropertyListener
 {
@@ -66,12 +67,11 @@ public class BannerController implements IRemotePropertyListener
 
         try
         {
-            // TODO add property name
-            remotePropertyListener.subscribeRemoteListener(this, "asdasd");
+            remotePropertyListener.subscribeRemoteListener(this, PROPERTY_NAME);
         }
         catch (RemoteException e)
         {
-            e.printStackTrace();
+            Logger.getAnonymousLogger().log(Level.INFO, "Could not subscribe to remote listener " + PROPERTY_NAME);
         }
 
         // Start polling timer: update banner every two seconds
@@ -114,12 +114,11 @@ public class BannerController implements IRemotePropertyListener
     {
         pollingTimer.cancel();
         // Stop simulation timer of effectenBeurs
-        // TODO
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) throws RemoteException
     {
-
+        banner.setKoersen(fromKoersToString((List<IFonds>) propertyChangeEvent.getNewValue()));
     }
 }

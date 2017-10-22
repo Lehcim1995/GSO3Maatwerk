@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import static Conts.Constants.BINDING_NAME;
 import static Conts.Constants.PORT_NUMBER;
+import static Conts.Constants.PROPERTY_NAME;
 
 public class Server
 {
@@ -36,7 +37,7 @@ public class Server
         try
         {
             remotePublisherForDomain = new RemotePublisher();
-            remotePublisherForDomain.registerProperty("asdasd");
+            remotePublisherForDomain.registerProperty(PROPERTY_NAME);
         }
         catch (RemoteException e)
         {
@@ -75,5 +76,12 @@ public class Server
     public static void main(String[] arg)
     {
         Server server = new Server();
+
+
+    }
+
+    public IRemotePublisherForDomain getRemotePublisherForDomain()
+    {
+        return remotePublisherForDomain;
     }
 }

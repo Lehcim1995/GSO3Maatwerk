@@ -5,9 +5,10 @@ import Interfaces.IFonds;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import Server.Server;
+
+import static Conts.Constants.PROPERTY_NAME;
 
 public class MockEffectenbeurs extends UnicastRemoteObject implements IEffectenBeurs
 {
@@ -15,6 +16,8 @@ public class MockEffectenbeurs extends UnicastRemoteObject implements IEffectenB
     private final Random r = new Random();
 
     private List<IFonds> koersen;
+    private Timer timer;
+    private Server server;
 
     public MockEffectenbeurs() throws RemoteException
     {
@@ -32,6 +35,26 @@ public class MockEffectenbeurs extends UnicastRemoteObject implements IEffectenB
     {
         updateKoersen();
         return koersen;
+    }
+
+    private void MakeTimer()
+    {
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    server.getRemotePublisherForDomain().inform(PROPERTY_NAME, getKoersen(), null);
+                }
+                catch (RemoteException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        },1000,1000);
     }
 
     private void updateKoersen()

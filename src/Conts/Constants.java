@@ -7,5 +7,7 @@ public class Constants
     // Set binding name for student administration
     public static final String BINDING_NAME = "StudentAdmin";
 
+    public static final String PROPERTY_NAME = "EffectenBeurs";
+
     public static final String LOCAL_HOST = "127.0.0.1";
 }
